@@ -9,16 +9,24 @@ export async function getOwnedBoardOrThrow(userId: string, boardId: string) {
   return board;
 }
 
-export const listBoards: RequestHandler = async (req, res) => {
-  const boards = await prisma.board.findMany({ where: { userId: req.userId } });
-  res.json({ boards });
+export const listBoards: RequestHandler = async (req, res, next) => {
+  try {
+    const boards = await prisma.board.findMany({ where: { userId: req.userId } });
+    res.json({ boards });
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const createBoard: RequestHandler = async (req, res) => {
-  const board = await prisma.board.create({
-    data: { title: req.body.title, userId: req.userId! },
-  });
-  res.status(201).json({ board });
+export const createBoard: RequestHandler = async (req, res, next) => {
+  try {
+    const board = await prisma.board.create({
+      data: { title: req.body.title, userId: req.userId! },
+    });
+    res.status(201).json({ board });
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const getBoard: RequestHandler = async (req, res, next) => {
