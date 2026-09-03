@@ -58,7 +58,7 @@ export const refresh: RequestHandler = (req, res, next) => {
 };
 
 export const logout: RequestHandler = (_req, res) => {
-  res.clearCookie(REFRESH_COOKIE, { httpOnly: true, sameSite: "lax" });
+  res.clearCookie(REFRESH_COOKIE, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" });
   res.json({ ok: true });
 };
 
