@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { apiFetch } from "../api/client.js";
 import KanbanColumn from "../components/KanbanColumn.js";
@@ -62,16 +62,45 @@ export default function BoardDetailPage() {
 
   return (
     <div>
-      {error && <p role="alert">{error}</p>}
-      <form onSubmit={handleAddTask}>
-        <label htmlFor="new-task-title">New task</label>
-        <input id="new-task-title" value={title} onChange={(e) => setTitle(e.target.value)} />
-        <button type="submit">Add</button>
+      <Link to="/boards" className="mb-4 inline-block text-sm text-brand-600 hover:underline">
+        ← Back to boards
+      </Link>
+
+      {error && (
+        <p role="alert" className="mb-4 text-sm text-red-600">
+          {error}
+        </p>
+      )}
+
+      <form
+        onSubmit={handleAddTask}
+        className="mb-6 flex max-w-md items-end gap-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+      >
+        <div className="flex-1">
+          <label htmlFor="new-task-title" className="mb-1 block text-sm font-medium text-slate-700">
+            New task
+          </label>
+          <input
+            id="new-task-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          />
+        </div>
+        <button
+          type="submit"
+          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700"
+        >
+          Add
+        </button>
       </form>
+
       <DndContext onDragEnd={handleDragEnd}>
-        {COLUMNS.map((col) => (
-          <KanbanColumn key={col.status} status={col.status} title={col.title} tasks={tasks} />
-        ))}
+        <div className="grid gap-4 sm:grid-cols-3">
+          {COLUMNS.map((col) => (
+            <KanbanColumn key={col.status} status={col.status} title={col.title} tasks={tasks} />
+          ))}
+        </div>
       </DndContext>
     </div>
   );

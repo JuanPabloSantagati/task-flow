@@ -14,7 +14,13 @@ export default function TaskCard({ task }: { task: Task }) {
     : undefined;
 
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className="cursor-grab select-none rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm active:cursor-grabbing"
+    >
       {task.title}
     </div>
   );
