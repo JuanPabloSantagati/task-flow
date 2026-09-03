@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/errorHandler.js";
 import authRouter from "./routes/auth.routes.js";
 import boardsRouter from "./routes/boards.routes.js";
+import { boardTasksRouter, taskRouter } from "./routes/tasks.routes.js";
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.get("/health", (_req, res) => {
 
 app.use("/auth", authRouter);
 app.use("/boards", boardsRouter);
+app.use("/boards/:boardId/tasks", boardTasksRouter);
+app.use("/tasks", taskRouter);
 
 // Route handlers registered above this line
 app.use(errorHandler);
