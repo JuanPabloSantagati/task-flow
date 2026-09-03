@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.js";
+import { useLanguage } from "../context/LanguageContext.js";
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,37 +23,45 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-900">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
+        className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800"
       >
-        <h1 className="mb-6 text-2xl font-semibold text-slate-900">Log in</h1>
+        <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+          {t.login.title}
+        </h1>
 
-        <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
-          Email
+        <label
+          htmlFor="email"
+          className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"
+        >
+          {t.login.email}
         </label>
         <input
           id="email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mb-4 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          className="mb-4 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
         />
 
-        <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
-          Password
+        <label
+          htmlFor="password"
+          className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"
+        >
+          {t.login.password}
         </label>
         <input
           id="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mb-4 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          className="mb-4 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
         />
 
         {error && (
-          <p role="alert" className="mb-4 text-sm text-red-600">
+          <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">
             {error}
           </p>
         )}
@@ -60,13 +70,13 @@ export default function LoginPage() {
           type="submit"
           className="w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700"
         >
-          Log in
+          {t.login.submit}
         </button>
 
-        <p className="mt-4 text-center text-sm text-slate-600">
-          No account?{" "}
+        <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
+          {t.login.noAccount}{" "}
           <Link to="/register" className="font-medium text-brand-600 hover:underline">
-            Register
+            {t.login.register}
           </Link>
         </p>
       </form>

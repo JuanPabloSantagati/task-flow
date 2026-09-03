@@ -19,7 +19,7 @@ export default function TaskCard({ task }: { task: Task }) {
       style={style}
       {...listeners}
       {...attributes}
-      className="cursor-grab select-none rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm active:cursor-grabbing"
+      className="cursor-grab select-none rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm active:cursor-grabbing dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
     >
       {task.title}
     </div>

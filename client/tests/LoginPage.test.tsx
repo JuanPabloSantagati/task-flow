@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import LoginPage from "../src/pages/LoginPage.js";
 import { AuthProvider } from "../src/context/AuthContext.js";
+import { LanguageProvider } from "../src/context/LanguageContext.js";
 
 vi.stubGlobal("fetch", vi.fn(async () =>
   new Response(JSON.stringify({ accessToken: "t", user: { id: "1", email: "a@b.com", name: "A" } }), {
@@ -14,9 +15,11 @@ describe("LoginPage", () => {
   it("submits email and password", async () => {
     render(
       <MemoryRouter>
-        <AuthProvider>
-          <LoginPage />
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <LoginPage />
+          </AuthProvider>
+        </LanguageProvider>
       </MemoryRouter>
     );
 
