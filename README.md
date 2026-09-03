@@ -3,7 +3,7 @@
 A full-stack Kanban task manager built to demonstrate authentication,
 authorization, REST API design, and a React frontend.
 
-Live demo: <fill in after Task 15/16 deploy>
+Live demo: <pending deployment>
 
 ## Stack
 
