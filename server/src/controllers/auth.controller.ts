@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
 import prisma from "../lib/prisma.js";
 import { hashPassword, comparePassword } from "../lib/password.js";
-import { signAccessToken, signRefreshToken } from "../lib/jwt.js";
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../lib/jwt.js";
 import { HttpError } from "../middleware/errorHandler.js";
 
 const REFRESH_COOKIE = "refreshToken";
@@ -38,6 +38,28 @@ export const login: RequestHandler = async (req, res, next) => {
   const refreshToken = signRefreshToken(user.id);
   res.cookie(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTIONS);
   res.json({ accessToken, user: { id: user.id, email: user.email, name: user.name } });
+};
+
+export const refresh: RequestHandler = (req, res, next) => {
+  const token = req.cookies?.[REFRESH_COOKIE];
+  if (!token) {
+    next(new HttpError(401, "NOT_AUTHENTICATED", "Missing refresh token"));
+    return;
+  }
+  try {
+    const { userId } = verifyRefreshToken(token);
+    const accessToken = signAccessToken(userId);
+    const newRefreshToken = signRefreshToken(userId);
+    res.cookie(REFRESH_COOKIE, newRefreshToken, REFRESH_COOKIE_OPTIONS);
+    res.json({ accessToken });
+  } catch {
+    next(new HttpError(401, "NOT_AUTHENTICATED", "Invalid or expired refresh token"));
+  }
+};
+
+export const logout: RequestHandler = (_req, res) => {
+  res.clearCookie(REFRESH_COOKIE, { httpOnly: true, sameSite: "lax" });
+  res.json({ ok: true });
 };
 
 export { REFRESH_COOKIE, REFRESH_COOKIE_OPTIONS };

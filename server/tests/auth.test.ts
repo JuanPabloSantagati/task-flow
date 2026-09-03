@@ -47,3 +47,30 @@ describe("POST /auth/login", () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe("POST /auth/refresh and /auth/logout", () => {
+  it("issues a new access token from the refresh cookie", async () => {
+    await request(app)
+      .post("/auth/register")
+      .send({ email: "d@example.com", password: "password123", name: "Dan" });
+    const loginRes = await request(app)
+      .post("/auth/login")
+      .send({ email: "d@example.com", password: "password123" });
+    const cookie = loginRes.headers["set-cookie"][0];
+
+    const refreshRes = await request(app).post("/auth/refresh").set("Cookie", cookie);
+    expect(refreshRes.status).toBe(200);
+    expect(refreshRes.body.accessToken).toBeTypeOf("string");
+  });
+
+  it("rejects refresh with no cookie", async () => {
+    const res = await request(app).post("/auth/refresh");
+    expect(res.status).toBe(401);
+  });
+
+  it("clears the refresh cookie on logout", async () => {
+    const res = await request(app).post("/auth/logout");
+    expect(res.status).toBe(200);
+    expect(res.headers["set-cookie"][0]).toContain("refreshToken=;");
+  });
+});
