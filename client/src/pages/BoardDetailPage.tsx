@@ -15,9 +15,14 @@ export default function BoardDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   async function loadTasks() {
     const res = await apiFetch(`/boards/${id}/tasks`);
+    if (!res.ok) {
+      setError("Could not load tasks.");
+      return;
+    }
     const data = await res.json();
     setTasks(data.tasks);
   }
@@ -28,7 +33,14 @@ export default function BoardDetailPage() {
 
   async function handleAddTask(e: React.FormEvent) {
     e.preventDefault();
-    await apiFetch(`/boards/${id}/tasks`, { method: "POST", body: JSON.stringify({ title }) });
+    const res = await apiFetch(`/boards/${id}/tasks`, {
+      method: "POST",
+      body: JSON.stringify({ title }),
+    });
+    if (!res.ok) {
+      setError("Could not add task.");
+      return;
+    }
     setTitle("");
     await loadTasks();
   }
@@ -37,15 +49,20 @@ export default function BoardDetailPage() {
     const { active, over } = event;
     if (!over) return;
     const newStatus = over.id as Task["status"];
-    await apiFetch(`/tasks/${active.id}`, {
+    const res = await apiFetch(`/tasks/${active.id}`, {
       method: "PATCH",
       body: JSON.stringify({ status: newStatus }),
     });
+    if (!res.ok) {
+      setError("Could not update task.");
+      return;
+    }
     await loadTasks();
   }
 
   return (
     <div>
+      {error && <p role="alert">{error}</p>}
       <form onSubmit={handleAddTask}>
         <label htmlFor="new-task-title">New task</label>
         <input id="new-task-title" value={title} onChange={(e) => setTitle(e.target.value)} />

@@ -8,7 +8,7 @@ const REFRESH_COOKIE = "refreshToken";
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
+  sameSite: process.env.NODE_ENV === "production" ? ("none" as const) : ("lax" as const),
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
@@ -58,8 +58,28 @@ export const refresh: RequestHandler = (req, res, next) => {
 };
 
 export const logout: RequestHandler = (_req, res) => {
-  res.clearCookie(REFRESH_COOKIE, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" });
+  res.clearCookie(REFRESH_COOKIE, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? ("none" as const) : ("lax" as const),
+  });
   res.json({ ok: true });
+};
+
+export const me: RequestHandler = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { id: true, email: true, name: true },
+    });
+    if (!user) {
+      next(new HttpError(404, "NOT_FOUND", "User not found"));
+      return;
+    }
+    res.json({ user });
+  } catch (err) {
+    next(err);
+  }
 };
 
 export { REFRESH_COOKIE, REFRESH_COOKIE_OPTIONS };

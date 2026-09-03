@@ -10,9 +10,14 @@ interface Board {
 export default function BoardsPage() {
   const [boards, setBoards] = useState<Board[]>([]);
   const [title, setTitle] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   async function loadBoards() {
     const res = await apiFetch("/boards");
+    if (!res.ok) {
+      setError("Could not load boards.");
+      return;
+    }
     const data = await res.json();
     setBoards(data.boards);
   }
@@ -23,7 +28,11 @@ export default function BoardsPage() {
 
   async function handleCreate(e: FormEvent) {
     e.preventDefault();
-    await apiFetch("/boards", { method: "POST", body: JSON.stringify({ title }) });
+    const res = await apiFetch("/boards", { method: "POST", body: JSON.stringify({ title }) });
+    if (!res.ok) {
+      setError("Could not create board.");
+      return;
+    }
     setTitle("");
     await loadBoards();
   }
@@ -31,6 +40,7 @@ export default function BoardsPage() {
   return (
     <div>
       <h1>Your boards</h1>
+      {error && <p role="alert">{error}</p>}
       <ul>
         {boards.map((board) => (
           <li key={board.id}>

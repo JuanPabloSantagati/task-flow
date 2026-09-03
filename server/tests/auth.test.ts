@@ -74,3 +74,25 @@ describe("POST /auth/refresh and /auth/logout", () => {
     expect(res.headers["set-cookie"][0]).toContain("refreshToken=;");
   });
 });
+
+describe("GET /auth/me", () => {
+  it("returns the authenticated user's profile", async () => {
+    await request(app)
+      .post("/auth/register")
+      .send({ email: "e@example.com", password: "password123", name: "Eli" });
+    const loginRes = await request(app)
+      .post("/auth/login")
+      .send({ email: "e@example.com", password: "password123" });
+
+    const res = await request(app)
+      .get("/auth/me")
+      .set("Authorization", `Bearer ${loginRes.body.accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.user.email).toBe("e@example.com");
+  });
+
+  it("rejects a request with no bearer token", async () => {
+    const res = await request(app).get("/auth/me");
+    expect(res.status).toBe(401);
+  });
+});
